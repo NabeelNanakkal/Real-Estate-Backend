@@ -1,0 +1,591 @@
+{
+  "success": true,
+  "count": 15,
+  "data": [
+    {
+      "location": "Arts District",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab0f",
+      "title": "Industrial Creative Space",
+      "description": "Converted warehouse space optimized for creative agencies, art galleries, or boutique retail.",
+      "propertyType": "office",
+      "listingType": "commercial",
+      "price": 3200000,
+      "city": "Los Angeles",
+      "bedrooms": 0,
+      "bathrooms": 4,
+      "area": 8500,
+      "parking": 5,
+      "amenities": [
+        "High Ceilings",
+        "Natural Light",
+        "Open Plan",
+        "Loading Dock"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1512403754473-27835f7b9984?w=1200"
+      ],
+      "featured": false,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.956Z",
+      "updatedAt": "2026-02-15T11:26:17.956Z",
+      "__v": 0
+    },
+    {
+      "location": "Summerlin",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab10",
+      "title": "Development Land Parcel",
+      "description": "Excellent investment opportunity. Prime land ready for residential development with all permits pending.",
+      "propertyType": "land",
+      "listingType": "sale",
+      "price": 12000000,
+      "city": "Las Vegas",
+      "bedrooms": 0,
+      "bathrooms": 0,
+      "area": 217800,
+      "parking": 0,
+      "amenities": [
+        "Zoned Residential",
+        "Utilities Ready",
+        "Scenic Views",
+        "Graded Site"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200"
+      ],
+      "featured": false,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.956Z",
+      "updatedAt": "2026-02-15T11:26:17.956Z",
+      "__v": 0
+    },
+    {
+      "location": "Midtown East",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab11",
+      "title": "Manhattan Micro-Studio",
+      "description": "Efficiently designed studio in a prime Midtown location. Perfect for a pied-à-terre or investment.",
+      "propertyType": "apartment",
+      "listingType": "sale",
+      "price": 550000,
+      "city": "New York",
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "area": 450,
+      "parking": 0,
+      "amenities": [
+        "Full Gym",
+        "24h Doorman",
+        "Rooftop Lounge",
+        "Storage Room"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1200"
+      ],
+      "featured": false,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.956Z",
+      "updatedAt": "2026-02-15T11:26:17.956Z",
+      "__v": 0
+    },
+    {
+      "location": "Santa Cruz Mountains",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab12",
+      "title": "Redwood Forest Cabin",
+      "description": "Charming secluded cabin nestled among ancient redwoods. A true sanctuary for nature lovers.",
+      "propertyType": "house",
+      "listingType": "rent",
+      "price": 3200,
+      "city": "California",
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "area": 1400,
+      "parking": 1,
+      "amenities": [
+        "Sky Lights",
+        "Rustic Woodstove",
+        "Deck",
+        "Organic Garden"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1449156001438-459bb60ad727?w=1200"
+      ],
+      "featured": false,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.956Z",
+      "updatedAt": "2026-02-15T11:26:17.956Z",
+      "__v": 0
+    },
+    {
+      "location": "Central Park West",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab04",
+      "title": "Skyline Penthouse",
+      "description": "A luxurious penthouse with panoramic city views, floor-to-ceiling windows, and a private rooftop garden.",
+      "propertyType": "apartment",
+      "listingType": "sale",
+      "price": 3500000,
+      "city": "New York",
+      "bedrooms": 4,
+      "bathrooms": 4.5,
+      "area": 4200,
+      "parking": 2,
+      "amenities": [
+        "Private Elevator",
+        "Rooftop Garden",
+        "Wine Cellar",
+        "Smart Home System"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1567496898481-287d1df5f3bb?w=1200"
+      ],
+      "featured": true,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.955Z",
+      "updatedAt": "2026-02-15T11:26:17.955Z",
+      "__v": 0
+    },
+    {
+      "location": "Biscayne Bay",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab05",
+      "title": "Ocean Breeze Villa",
+      "description": "Modern waterfront villa with direct beach access, infinity pool, and expansive outdoor entertaining areas.",
+      "propertyType": "villa",
+      "listingType": "sale",
+      "price": 5200000,
+      "city": "Miami",
+      "bedrooms": 6,
+      "bathrooms": 7,
+      "area": 6800,
+      "parking": 4,
+      "amenities": [
+        "Infinity Pool",
+        "Private Dock",
+        "Home Theater",
+        "Gym"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200"
+      ],
+      "featured": true,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.955Z",
+      "updatedAt": "2026-02-15T11:26:17.955Z",
+      "__v": 0
+    },
+    {
+      "location": "Joshua Tree",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab06",
+      "title": "Modern Desert Retreat",
+      "description": "Architecturally stunning home featuring organic materials, massive glass walls, and a minimalist aesthetic.",
+      "propertyType": "house",
+      "listingType": "sale",
+      "price": 1850000,
+      "city": "California",
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "area": 2800,
+      "parking": 2,
+      "amenities": [
+        "Desert Views",
+        "Outdoor Firepit",
+        "Custom Solar Array",
+        "Art Studio"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1541123437809-9fd12bd13203?w=1200"
+      ],
+      "featured": true,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.955Z",
+      "updatedAt": "2026-02-15T11:26:17.955Z",
+      "__v": 0
+    },
+    {
+      "location": "Beacon Hill",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab07",
+      "title": "Historic Townhouse",
+      "description": "Meticulously restored brownstone featuring original woodwork, stained glass, and modern high-end kitchen.",
+      "propertyType": "house",
+      "listingType": "sale",
+      "price": 2450000,
+      "city": "Boston",
+      "bedrooms": 5,
+      "bathrooms": 3.5,
+      "area": 3400,
+      "parking": 1,
+      "amenities": [
+        "Original Fireplaces",
+        "Updated Kitchen",
+        "Private Garden",
+        "High Ceilings"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=1200"
+      ],
+      "featured": true,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.955Z",
+      "updatedAt": "2026-02-15T11:26:17.955Z",
+      "__v": 0
+    },
+    {
+      "location": "Pacific Palisades",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab0a",
+      "title": "Coastal Blue Horizon",
+      "description": "Spectacular cliffside property with uninterrupted ocean views and a contemporary open-plan layout.",
+      "propertyType": "villa",
+      "listingType": "sale",
+      "price": 4800000,
+      "city": "Los Angeles",
+      "bedrooms": 5,
+      "bathrooms": 5.5,
+      "area": 5500,
+      "parking": 3,
+      "amenities": [
+        "Infinity Pool",
+        "Wine Cellar",
+        "Elevator",
+        "Terrace"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200"
+      ],
+      "featured": false,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.955Z",
+      "updatedAt": "2026-02-15T11:26:17.955Z",
+      "__v": 0
+    },
+    {
+      "location": "Lincoln Park",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab0b",
+      "title": "Urban Garden Apartment",
+      "description": "Ground floor apartment with a surprisingly large private garden in the center of the city.",
+      "propertyType": "apartment",
+      "listingType": "rent",
+      "price": 4500,
+      "city": "Chicago",
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "area": 1100,
+      "parking": 1,
+      "amenities": [
+        "Private Garden",
+        "Pet Friendly",
+        "Hardwood Floors",
+        "In-unit Laundry"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1200"
+      ],
+      "featured": false,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.955Z",
+      "updatedAt": "2026-02-15T11:26:17.955Z",
+      "__v": 0
+    },
+    {
+      "location": "Wall Street",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab0c",
+      "title": "Corporate HQ Tower",
+      "description": "Prime commercial office space in the financial district, suitable for large corporate headquarters.",
+      "propertyType": "office",
+      "listingType": "commercial",
+      "price": 15000000,
+      "city": "New York",
+      "bedrooms": 0,
+      "bathrooms": 10,
+      "area": 25000,
+      "parking": 20,
+      "amenities": [
+        "24/7 Security",
+        "Helipad",
+        "Underground Parking",
+        "Conferencing Facilities"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200"
+      ],
+      "featured": false,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.955Z",
+      "updatedAt": "2026-02-15T11:26:17.955Z",
+      "__v": 0
+    },
+    {
+      "location": "Napa Valley",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab0d",
+      "title": "Vineyard Estate",
+      "description": "Sprawling estate including a manor house, working vineyard, and world-class wine production facilities.",
+      "propertyType": "house",
+      "listingType": "sale",
+      "price": 8900000,
+      "city": "California",
+      "bedrooms": 8,
+      "bathrooms": 9,
+      "area": 12000,
+      "parking": 10,
+      "amenities": [
+        "Wine Production",
+        "Guest House",
+        "Helipad",
+        "Pool"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200"
+      ],
+      "featured": false,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.955Z",
+      "updatedAt": "2026-02-15T11:26:17.955Z",
+      "__v": 0
+    },
+    {
+      "location": "Lake Tahoe",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab0e",
+      "title": "Lakeside Serenity",
+      "description": "Peaceful home on the edge of a crystal-clear lake, featuring a private jetty and large wrap-around deck.",
+      "propertyType": "house",
+      "listingType": "sale",
+      "price": 2100000,
+      "city": "Nevada",
+      "bedrooms": 4,
+      "bathrooms": 3,
+      "area": 3200,
+      "parking": 2,
+      "amenities": [
+        "Private Jetty",
+        "Fireplace",
+        "Lake Views",
+        "Hiking Access"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200"
+      ],
+      "featured": false,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.955Z",
+      "updatedAt": "2026-02-15T11:26:17.955Z",
+      "__v": 0
+    },
+    {
+      "location": "Palo Alto",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab08",
+      "title": "Silicon Valley Loft",
+      "description": "Ultra-modern loft in the heart of the tech hub, featuring industrial design and state-of-the-art home automation.",
+      "propertyType": "apartment",
+      "listingType": "sale",
+      "price": 1200000,
+      "city": "California",
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "area": 1800,
+      "parking": 2,
+      "amenities": [
+        "High-speed Fiber",
+        "Exposed Brick",
+        "Smart Lighting",
+        "Mezzanine"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200"
+      ],
+      "featured": false,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.955Z",
+      "updatedAt": "2026-02-15T11:26:17.955Z",
+      "__v": 0
+    },
+    {
+      "location": "Aspen Mountain",
+      "details": {
+        "furnished": false,
+        "parking": 0
+      },
+      "_id": "6991ad5908b1da3454f7ab09",
+      "title": "Alpine Ski Chalet",
+      "description": "Cozy yet spacious wooden chalet located just steps from the main ski lifts. Perfect for winter enthusiasts.",
+      "propertyType": "house",
+      "listingType": "sale",
+      "price": 1600000,
+      "city": "Aspen",
+      "bedrooms": 4,
+      "bathrooms": 3,
+      "area": 3100,
+      "parking": 1,
+      "amenities": [
+        "Sauna",
+        "Ski-in/Ski-out",
+        "Large Living Room",
+        "Heated Garage"
+      ],
+      "images": [
+        "https://images.unsplash.com/photo-1518730518541-d0843268c287?w=1200"
+      ],
+      "featured": false,
+      "status": "active",
+      "views": 0,
+      "agent": {
+        "_id": "6991ad5908b1da3454f7ab02",
+        "name": "Admin User",
+        "email": "admin@estatehub.com",
+        "phone": "+1 555 123 4567"
+      },
+      "createdAt": "2026-02-15T11:26:17.955Z",
+      "updatedAt": "2026-02-15T11:26:17.955Z",
+      "__v": 0
+    }
+  ]
+}
