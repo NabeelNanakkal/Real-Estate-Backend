@@ -68,9 +68,9 @@ exports.updatePreferences = asyncHandler(async (req, res) => {
 // @route   PUT /api/auth/profile
 // @access  Private
 exports.updateProfile = asyncHandler(async (req, res) => {
-  const { name, email, phone, bio, company } = req.body;
-  
-  const userFields = { name, email, phone, bio, company };
+  const { name, email, phone, bio, company, currency } = req.body;
+
+  const userFields = { name, email, phone, bio, company, currency };
 
   const file = req.files?.[0];
   if (file) {
@@ -113,7 +113,7 @@ exports.updatePassword = asyncHandler(async (req, res) => {
 // @access  Public
 exports.getPublicProfile = asyncHandler(async (req, res) => {
   // Assuming the first created Admin is the main site owner.
-  const adminUser = await User.findOne({ role: 'admin' }).select('company companyLogo');
+  const adminUser = await User.findOne({ role: 'admin' }).select('company companyLogo currency');
   
   if (!adminUser) {
     return res.status(404).json({ success: false, message: 'No admin profile found' });

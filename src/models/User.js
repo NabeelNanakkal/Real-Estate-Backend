@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema({
   twoFactorAuth: {
     type: Boolean,
     default: false
+  },
+  currency: {
+    type: String,
+    default: 'USD'
   }
 }, {
   timestamps: true
