@@ -34,14 +34,16 @@ const mergeImages = (existingImagesJson, newFiles) => {
 // @route   GET /api/properties/dashboard-stats
 // @access  Private
 exports.getDashboardStats = asyncHandler(async (req, res) => {
-  const [totalProperties, totalInquiries, viewsAgg, recentPropertiesRaw] = await Promise.all([
+  const [totalProperties, totalInquiries, viewsAgg, recentPropertiesRaw, revenueAgg] = await Promise.all([
     Property.countDocuments(),
     Inquiry.countDocuments(),
     Property.aggregate([{ $group: { _id: null, total: { $sum: '$views' } } }]),
-    Property.find().sort({ createdAt: -1 }).limit(3)
+    Property.find().sort({ createdAt: -1 }).limit(3),
+    Property.aggregate([{ $match: { status: { $in: ['sold', 'rented'] } } }, { $group: { _id: null, total: { $sum: '$price' } } }])
   ]);
 
   const totalViews = viewsAgg[0]?.total || 0;
+  const totalRevenue = revenueAgg[0]?.total || 0;
 
   const recentProperties = await Promise.all(
     recentPropertiesRaw.map(async (p) => ({
@@ -55,7 +57,7 @@ exports.getDashboardStats = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    data: { totalProperties, totalInquiries, totalViews, recentProperties }
+    data: { totalProperties, totalInquiries, totalViews, totalRevenue, recentProperties }
   });
 });
 

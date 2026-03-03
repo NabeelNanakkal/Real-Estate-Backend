@@ -34,16 +34,38 @@ const propertySchema = new mongoose.Schema({
     required: true
   },
   bedrooms: {
-    type: Number,
-    required: true
+    type: Number
   },
   bathrooms: {
-    type: Number,
-    required: true
+    type: Number
   },
   area: {
     type: Number,
     required: true
+  },
+  floor: {
+    type: Number
+  },
+  totalFloors: {
+    type: Number
+  },
+  plotSize: {
+    type: Number
+  },
+  houseFloors: {
+    type: Number
+  },
+  furnished: {
+    type: Boolean,
+    default: false
+  },
+  roadAccess: {
+    type: Boolean,
+    default: false
+  },
+  zoning: {
+    type: String,
+    enum: ['residential', 'commercial', 'mixed', 'agricultural', 'industrial', '']
   },
   yearBuilt: {
     type: Number,

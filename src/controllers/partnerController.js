@@ -15,7 +15,12 @@ exports.getPartners = asyncHandler(async (req, res) => {
 // @access  Private (Admin)
 exports.addPartner = asyncHandler(async (req, res) => {
   try {
-    const partner = await Partner.create(req.body);
+    const file = req.files?.[0];
+    const iconPath = file
+      ? (file.path || `uploads/${file.filename}`)
+      : req.body.icon;
+
+    const partner = await Partner.create({ name: req.body.name, icon: iconPath });
     res.status(201).json({ success: true, data: partner });
   } catch (err) {
     if (err.code === MONGO_DUPLICATE_KEY) {

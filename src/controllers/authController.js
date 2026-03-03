@@ -63,3 +63,61 @@ exports.updatePreferences = asyncHandler(async (req, res) => {
 
   res.json({ success: true, data: user });
 });
+
+// @desc    Update user profile (with avatar/logo)
+// @route   PUT /api/auth/profile
+// @access  Private
+exports.updateProfile = asyncHandler(async (req, res) => {
+  const { name, email, phone, bio, company } = req.body;
+  
+  const userFields = { name, email, phone, bio, company };
+
+  const file = req.files?.[0];
+  if (file) {
+    userFields.companyLogo = file.path || `/uploads/${file.filename}`;
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    { $set: userFields },
+    { new: true, runValidators: true }
+  ).select('-password');
+
+  res.json({ success: true, data: user });
+});
+
+// @desc    Update password
+// @route   PUT /api/auth/password
+// @access  Private
+exports.updatePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user.id);
+
+  if (!(await user.comparePassword(currentPassword))) {
+    return res.status(401).json({ success: false, message: 'Incorrect current password' });
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  res.json({
+    success: true,
+    message: 'Password updated successfully',
+    data: { _id: user._id, name: user.name, email: user.email, role: user.role, token: generateToken(user._id) }
+  });
+});
+
+// @desc    Get public company profile (logo, name)
+// @route   GET /api/auth/public-profile
+// @access  Public
+exports.getPublicProfile = asyncHandler(async (req, res) => {
+  // Assuming the first created Admin is the main site owner.
+  const adminUser = await User.findOne({ role: 'admin' }).select('company companyLogo');
+  
+  if (!adminUser) {
+    return res.status(404).json({ success: false, message: 'No admin profile found' });
+  }
+
+  res.json({ success: true, data: adminUser });
+});

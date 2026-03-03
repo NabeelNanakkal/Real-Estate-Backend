@@ -21,8 +21,8 @@ if (isCloudinaryConfigured) {
     cloudinary: cloudinary,
     params: {
       folder: 'estatehub',
-      allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
-      transformation: [{ width: 1200, height: 800, crop: 'limit' }]
+      allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'svg', 'gif']
+      // Removed transformation since Cloudinary throws errors applying crops to SVGs
     }
   });
   console.log('✅ Using Cloudinary for image storage');

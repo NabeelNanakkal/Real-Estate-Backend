@@ -34,6 +34,12 @@ const userSchema = new mongoose.Schema({
   company: {
     type: String
   },
+  companyLogo: {
+    type: String
+  },
+  bio: {
+    type: String
+  },
   emailNotifications: {
     type: Boolean,
     default: true
