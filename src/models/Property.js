@@ -29,6 +29,10 @@ const propertySchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  mapUrl: {
+    type: String,
+    default: ''
+  },
   city: {
     type: String,
     required: true
