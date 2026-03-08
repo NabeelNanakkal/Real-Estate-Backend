@@ -20,7 +20,7 @@ if (isCloudinaryConfigured) {
   storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-      folder: 'estatehub',
+      folder: 'gqrealestate',
       allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'svg', 'gif']
       // Removed transformation since Cloudinary throws errors applying crops to SVGs
     }

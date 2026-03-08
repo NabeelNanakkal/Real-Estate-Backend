@@ -17,7 +17,7 @@ const createAdmin = async () => {
 
         const adminCredentials = {
             name: 'Administrative Overseer',
-            email: 'admin@estatehub.com',
+            email: 'admin@gqrealestate.com',
             password: 'Nabeel123#',
             role: 'admin',
             phone: '+1 (800) ADMIN-HQ'
