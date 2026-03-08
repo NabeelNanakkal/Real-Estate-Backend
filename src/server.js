@@ -51,6 +51,8 @@ app.use('/api/partners',      require('./routes/partnerRoutes'));
 app.use('/api/categories',    require('./routes/categoryRoutes'));
 app.use('/api/contact',       require('./routes/contactRoutes'));
 app.use('/api/testimonials',  require('./routes/testimonialRoutes'));
+app.use('/api/banners',       require('./routes/bannerRoutes'));
+app.use('/api/stats',         require('./routes/statsRoutes'));
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => res.json({ status: 'OK', message: 'API is running' }));
@@ -58,7 +60,8 @@ app.get('/api/health', (_req, res) => res.json({ status: 'OK', message: 'API is 
 // ─── Global error handler ─────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {
   const status  = err.statusCode || err.status || 500;
-  const message = err.isOperational ? err.message : 'Internal Server Error';
+  const message = err.message || 'Internal Server Error';
+  console.error('Backend Error:', err.message);
   if (!err.isOperational) console.error(err.stack);
   res.status(status).json({ success: false, message });
 });

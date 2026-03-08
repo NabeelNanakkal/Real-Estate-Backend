@@ -1,4 +1,5 @@
 const Property = require('../models/Property');
+const Category = require('../models/Category');
 const Inquiry = require('../models/Inquiry');
 const asyncHandler = require('../utils/asyncHandler');
 const { DEFAULT_PAGE_LIMIT, LISTING_ID_PREFIX } = require('../constants');
@@ -77,14 +78,35 @@ exports.getPublicStats = asyncHandler(async (req, res) => {
 // @route   GET /api/properties
 // @access  Public
 exports.getProperties = asyncHandler(async (req, res) => {
-  const { type, propertyType, minPrice, maxPrice, bedrooms, city, featured } = req.query;
+  const { listingType, propertyType, minPrice, maxPrice, bedrooms, city, featured } = req.query;
   const page  = parseInt(req.query.page)  || 1;
   const limit = parseInt(req.query.limit) || DEFAULT_PAGE_LIMIT;
   const skip  = (page - 1) * limit;
 
   const query = {};
-  if (type)         query.listingType   = type;
-  if (propertyType) query.propertyType  = propertyType;
+  const currentListingType = listingType || req.query.type;
+  if (currentListingType) {
+    if (currentListingType.includes(',')) {
+      query.listingType = { $in: currentListingType.split(',') };
+    } else {
+      query.listingType = currentListingType;
+    }
+  }
+  if (req.query.category) {
+    const categoryMatch = await Category.findOne({ title: new RegExp(req.query.category, 'i') });
+    if (categoryMatch) {
+      query.category = categoryMatch._id;
+    } else {
+      query.category = null; // force empty result if category title doesn't exist
+    }
+  }
+  if (propertyType) {
+    if (propertyType.includes(',')) {
+      query.propertyType = { $in: propertyType.split(',') };
+    } else {
+      query.propertyType = propertyType;
+    }
+  }
   if (city)         query.city          = new RegExp(city, 'i');
   if (featured)     query.featured      = featured === 'true';
   if (bedrooms)     query.bedrooms      = { $gte: parseInt(bedrooms) };
@@ -98,6 +120,7 @@ exports.getProperties = asyncHandler(async (req, res) => {
     Property.countDocuments(query),
     Property.find(query)
       .populate('agent', 'name email phone avatar')
+      .populate('category', 'title')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
@@ -119,7 +142,9 @@ exports.getProperty = asyncHandler(async (req, res) => {
     req.params.id,
     { $inc: { views: 1 } },
     { new: true }
-  ).populate('agent', 'name email phone company');
+  )
+    .populate('agent', 'name email phone company')
+    .populate('category', 'title');
 
   res.json({ success: true, data: property });
 });
