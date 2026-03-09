@@ -21,6 +21,11 @@ const propertySchema = new mongoose.Schema({
     enum: ['sale', 'rent', 'commercial'],
     default: 'sale'
   },
+  rentPeriod: {
+    type: String,
+    enum: ['monthly', 'yearly', ''],
+    default: ''
+  },
   price: {
     type: Number,
     required: true
