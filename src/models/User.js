@@ -59,6 +59,10 @@ const userSchema = new mongoose.Schema({
   currency: {
     type: String,
     default: 'USD'
+  },
+  activeToken: {
+    type: String,
+    default: null
   }
 }, {
   timestamps: true

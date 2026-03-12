@@ -35,25 +35,39 @@ const mergeImages = (existingImagesJson, newFiles) => {
 // @route   GET /api/properties/dashboard-stats
 // @access  Private
 exports.getDashboardStats = asyncHandler(async (req, res) => {
+  const isAgent = req.user.role !== 'admin';
+  const propFilter = isAgent ? { agent: req.user.id } : {};
+
+  let inquiryFilter = {};
+  if (isAgent) {
+    const agentPropertyIds = await Property.find(propFilter).distinct('_id');
+    inquiryFilter = { property: { $in: agentPropertyIds } };
+  }
+
   const [totalProperties, totalInquiries, viewsAgg, recentPropertiesRaw, revenueAgg] = await Promise.all([
-    Property.countDocuments(),
-    Inquiry.countDocuments(),
-    Property.aggregate([{ $group: { _id: null, total: { $sum: '$views' } } }]),
-    Property.find().sort({ createdAt: -1 }).limit(3),
-    Property.aggregate([{ $match: { status: { $in: ['sold', 'rented'] } } }, { $group: { _id: null, total: { $sum: '$price' } } }])
+    Property.countDocuments(propFilter),
+    Inquiry.countDocuments(inquiryFilter),
+    Property.aggregate([{ $match: propFilter }, { $group: { _id: null, total: { $sum: '$views' } } }]),
+    Property.find(propFilter).sort({ createdAt: -1 }).limit(3),
+    Property.aggregate([{ $match: { ...propFilter, status: { $in: ['sold', 'rented'] } } }, { $group: { _id: null, total: { $sum: '$price' } } }])
   ]);
 
   const totalViews = viewsAgg[0]?.total || 0;
   const totalRevenue = revenueAgg[0]?.total || 0;
 
   const recentProperties = await Promise.all(
-    recentPropertiesRaw.map(async (p) => ({
-      _id: p._id,
-      title: p.title,
-      status: p.status,
-      views: p.views,
-      inquiries: await Inquiry.countDocuments({ property: p._id })
-    }))
+    recentPropertiesRaw.map(async (p) => {
+      const populated = await Property.findById(p._id).populate('agent', 'name').lean();
+      return {
+        _id: p._id,
+        title: p.title,
+        status: p.status,
+        inquiries: await Inquiry.countDocuments({ property: p._id }),
+        agent: populated?.agent?.name || 'N/A',
+        propertyType: p.propertyType || p.type || '—',
+        price: p.price || 0
+      };
+    })
   );
 
   res.json({
@@ -84,6 +98,7 @@ exports.getProperties = asyncHandler(async (req, res) => {
   const skip  = (page - 1) * limit;
 
   const query = {};
+  if (req.query.agent) query.agent = req.query.agent;
   const currentListingType = listingType || req.query.type;
   if (currentListingType) {
     if (currentListingType.includes(',')) {

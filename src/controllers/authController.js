@@ -35,10 +35,33 @@ exports.login = asyncHandler(async (req, res) => {
     return res.status(401).json({ success: false, message: 'Invalid credentials' });
   }
 
+  const token = generateToken(user._id);
+
+  // Single-session: store active token in DB
+  user.activeToken = token;
+  await user.save({ validateBeforeSave: false });
+
+  // Set httpOnly cookie (7 days)
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
   res.json({
     success: true,
-    data: { _id: user._id, name: user.name, email: user.email, role: user.role, token: generateToken(user._id) }
+    data: { _id: user._id, name: user.name, email: user.email, role: user.role, token }
   });
+});
+
+// @desc    Logout user
+// @route   POST /api/auth/logout
+// @access  Private
+exports.logout = asyncHandler(async (req, res) => {
+  await User.findByIdAndUpdate(req.user.id, { activeToken: null });
+  res.clearCookie('token');
+  res.json({ success: true, message: 'Logged out successfully' });
 });
 
 // @desc    Get current user

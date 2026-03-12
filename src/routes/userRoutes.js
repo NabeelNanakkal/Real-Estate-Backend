@@ -1,9 +1,12 @@
 const express = require('express');
-const router = express.Router();
+const router  = express.Router();
+const { getUsers, createUser, updateUser, deleteUser, forceLogout } = require('../controllers/userController');
+const { protect, authorize } = require('../middleware/auth');
 
-// Placeholder for user routes
-router.get('/', (req, res) => {
-  res.json({ message: 'User routes' });
-});
+router.use(protect, authorize('admin'));
+
+router.route('/').get(getUsers).post(createUser);
+router.route('/:id').put(updateUser).delete(deleteUser);
+router.post('/:id/force-logout', forceLogout);
 
 module.exports = router;

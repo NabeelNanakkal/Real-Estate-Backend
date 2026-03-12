@@ -1,4 +1,5 @@
 const Inquiry = require('../models/Inquiry');
+const Property = require('../models/Property');
 const { pushInquiryToBigin, deleteContactFromBigin } = require('./zohoController');
 const asyncHandler = require('../utils/asyncHandler');
 const { CRM_ERROR_MSG } = require('../constants');
@@ -52,8 +53,14 @@ exports.createInquiry = asyncHandler(async (req, res) => {
 // @desc    Get all inquiries
 // @route   GET /api/inquiries
 // @access  Private (Admin/Agent)
-exports.getInquiries = asyncHandler(async (_req, res) => {
-  const inquiries = await Inquiry.find()
+exports.getInquiries = asyncHandler(async (req, res) => {
+  let filter = {};
+  if (req.user.role !== 'admin') {
+    const agentPropertyIds = await Property.find({ agent: req.user.id }).distinct('_id');
+    filter = { property: { $in: agentPropertyIds } };
+  }
+
+  const inquiries = await Inquiry.find(filter)
     .populate('property', 'title location.address')
     .sort({ createdAt: -1 });
 
