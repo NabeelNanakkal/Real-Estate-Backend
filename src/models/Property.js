@@ -26,6 +26,11 @@ const propertySchema = new mongoose.Schema({
     enum: ['monthly', 'yearly', ''],
     default: ''
   },
+  evaType: {
+    type: String,
+    enum: ['eva-exclusive', 'eva-inclusive', ''],
+    default: ''
+  },
   price: {
     type: Number,
     required: true
