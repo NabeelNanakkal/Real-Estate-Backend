@@ -24,7 +24,10 @@ const syncToBigin = async (inquiry, propertyTitle) => {
     return true;
   }
 
-  await Inquiry.findByIdAndUpdate(inquiry._id, { crmSyncStatus: 'failed', crmError: CRM_ERROR_MSG });
+  await Inquiry.findByIdAndUpdate(inquiry._id, {
+    crmSyncStatus: 'failed',
+    crmError: syncResult?.error || CRM_ERROR_MSG,
+  });
   return false;
 };
 

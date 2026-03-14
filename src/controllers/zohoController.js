@@ -56,6 +56,8 @@ const ensureValidToken = async () => {
     if (response.data.access_token) {
       tokens = { ...tokens, access_token: response.data.access_token, expires_in: response.data.expires_in, timestamp: Date.now() };
       tokenManager.saveTokens(tokens);
+    } else {
+      throw new Error(`Token refresh failed: ${JSON.stringify(response.data)}`);
     }
   }
 
@@ -145,8 +147,11 @@ exports.pushInquiryToBigin = async (inquiryData) => {
     const contactId = record?.details?.id || null;
     return { ...response.data, contactId };
   } catch (error) {
-    console.error('Bigin Sync Error:', error.response?.data || error.message);
-    return null;
+    const errorMsg = error.response?.data
+      ? JSON.stringify(error.response.data)
+      : error.message;
+    console.error('Bigin Sync Error:', errorMsg);
+    return { error: errorMsg };
   }
 };
 
