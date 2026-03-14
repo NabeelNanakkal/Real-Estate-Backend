@@ -8,12 +8,13 @@ const { CRM_ERROR_MSG } = require('../constants');
 
 const syncToBigin = async (inquiry, propertyTitle, propertyCode) => {
   const syncResult = await pushInquiryToBigin({
-    name: inquiry.name,
-    email: inquiry.email,
-    phone: inquiry.phone,
-    message: inquiry.message,
+    name:          inquiry.name,
+    email:         inquiry.email,
+    phone:         inquiry.phone,
+    message:       inquiry.message,
     propertyTitle: propertyTitle || 'Unknown Property',
-    propertyCode: propertyCode || null,
+    propertyCode:  propertyCode || null,
+    source:        'Property Enquiry',
   });
 
   if (syncResult?.data) {

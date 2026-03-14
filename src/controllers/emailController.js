@@ -17,9 +17,9 @@ exports.sendContactEmail = asyncHandler(async (req, res) => {
       await pushInquiryToBigin({
         name,
         email,
-        phone: phone || '',
+        phone:   phone || '',
         message: `Subject: ${subject}\n\n${message}`,
-        propertyTitle: 'Contact Form Inquiry',
+        source:  'Contact Us',
       });
     } catch (err) {
       console.error('Contact form Bigin sync failed:', err.message);
