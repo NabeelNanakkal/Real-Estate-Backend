@@ -6,13 +6,14 @@ const { CRM_ERROR_MSG } = require('../constants');
 
 // ─── Helper ──────────────────────────────────────────────────────────────────
 
-const syncToBigin = async (inquiry, propertyTitle) => {
+const syncToBigin = async (inquiry, propertyTitle, propertyCode) => {
   const syncResult = await pushInquiryToBigin({
     name: inquiry.name,
     email: inquiry.email,
     phone: inquiry.phone,
     message: inquiry.message,
-    propertyTitle: propertyTitle || 'Unknown Property'
+    propertyTitle: propertyTitle || 'Unknown Property',
+    propertyCode: propertyCode || null,
   });
 
   if (syncResult?.data) {
@@ -42,8 +43,8 @@ exports.createInquiry = asyncHandler(async (req, res) => {
   // Fire-and-forget background sync
   setImmediate(async () => {
     try {
-      const populated = await Inquiry.findById(inquiry._id).populate('property', 'title');
-      await syncToBigin(inquiry, populated?.property?.title);
+      const populated = await Inquiry.findById(inquiry._id).populate('property', 'title listingId');
+      await syncToBigin(inquiry, populated?.property?.title, populated?.property?.listingId);
     } catch (err) {
       console.error('Background CRM sync failed:', err.message);
       await Inquiry.findByIdAndUpdate(inquiry._id, { crmSyncStatus: 'failed', crmError: err.message });
@@ -109,7 +110,7 @@ exports.deleteInquiry = asyncHandler(async (req, res) => {
 // @route   POST /api/inquiries/:id/sync
 // @access  Private (Admin/Agent)
 exports.retrySyncInquiry = asyncHandler(async (req, res) => {
-  const inquiry = await Inquiry.findById(req.params.id).populate('property', 'title');
+  const inquiry = await Inquiry.findById(req.params.id).populate('property', 'title listingId');
 
   if (!inquiry) {
     return res.status(404).json({ success: false, message: 'Inquiry not found' });
@@ -119,7 +120,7 @@ exports.retrySyncInquiry = asyncHandler(async (req, res) => {
   inquiry.crmError = null;
   await inquiry.save();
 
-  await syncToBigin(inquiry, inquiry.property?.title);
+  await syncToBigin(inquiry, inquiry.property?.title, inquiry.property?.listingId);
 
   const updated = await Inquiry.findById(inquiry._id).populate('property', 'title');
   res.json({ success: true, data: updated });

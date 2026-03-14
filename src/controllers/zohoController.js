@@ -149,14 +149,22 @@ exports.pushInquiryToBigin = async (inquiryData) => {
   try {
     const tokens      = await ensureValidToken();
     const apiDomain   = tokens.api_domain || 'https://www.zohoapis.com';
-    const contactData = {
-      data: [{
-        ...splitName(inquiryData.name),
-        Email:       inquiryData.email,
-        Phone:       inquiryData.phone,
-        Description: `Inquiry for property: ${inquiryData.propertyTitle}\nMessage: ${inquiryData.message}`,
-      }],
+    const record = {
+      ...splitName(inquiryData.name),
+      Email:       inquiryData.email,
+      Phone:       inquiryData.phone,
+      Description: [
+        `📋 PROPERTY INQUIRY`,
+        ``,
+        `Property : ${inquiryData.propertyTitle}`,
+        ``,
+        `Message  : ${inquiryData.message}`,
+      ].join('\n'),
     };
+
+    if (inquiryData.propertyCode) record.Property_Code = inquiryData.propertyCode;
+
+    const contactData = { data: [record] };
 
     const response  = await axios.post(`${apiDomain}/bigin/v1/Contacts`, contactData, { headers: biginHeaders(tokens.access_token) });
     const record    = response.data?.data?.[0];
