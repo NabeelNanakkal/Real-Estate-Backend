@@ -34,7 +34,7 @@ const biginHeaders = (accessToken) => ({
 // ─── Token management ────────────────────────────────────────────────────────
 
 const ensureValidToken = async () => {
-  let tokens = tokenManager.getTokens();
+  let tokens = await tokenManager.getTokens();
   if (!tokens) throw new Error('Zoho not authorized');
 
   const isExpired = Date.now() - tokens.timestamp > (tokens.expires_in - 60) * 1000;
@@ -55,7 +55,7 @@ const ensureValidToken = async () => {
 
     if (response.data.access_token) {
       tokens = { ...tokens, access_token: response.data.access_token, expires_in: response.data.expires_in, timestamp: Date.now() };
-      tokenManager.saveTokens(tokens);
+      await tokenManager.saveTokens(tokens);
     } else {
       throw new Error(`Token refresh failed: ${JSON.stringify(response.data)}`);
     }
@@ -105,7 +105,7 @@ exports.handleCallback = async (req, res) => {
     });
 
     if (response.data.access_token) {
-      tokenManager.saveTokens({
+      await tokenManager.saveTokens({
         access_token:  response.data.access_token,
         refresh_token: response.data.refresh_token,
         expires_in:    response.data.expires_in,

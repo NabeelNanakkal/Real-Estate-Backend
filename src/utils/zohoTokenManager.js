@@ -1,25 +1,33 @@
-const fs = require('fs');
-const path = require('path');
+const mongoose = require('mongoose');
 
-const TOKEN_FILE = path.join(__dirname, '../config/zoho-tokens.json');
+// Inline schema — no separate model file needed
+const tokenSchema = new mongoose.Schema({
+  key:           { type: String, default: 'zoho', unique: true },
+  access_token:  String,
+  refresh_token: String,
+  expires_in:    Number,
+  timestamp:     Number,
+  api_domain:    String,
+});
 
-// Ensure config directory exists
-const configDir = path.dirname(TOKEN_FILE);
-if (!fs.existsSync(configDir)) {
-    fs.mkdirSync(configDir, { recursive: true });
-}
+const Token = mongoose.models.ZohoToken || mongoose.model('ZohoToken', tokenSchema);
 
-exports.saveTokens = (tokens) => {
-    fs.writeFileSync(TOKEN_FILE, JSON.stringify(tokens, null, 2));
+exports.saveTokens = async (tokens) => {
+  await Token.findOneAndUpdate(
+    { key: 'zoho' },
+    { ...tokens, key: 'zoho' },
+    { upsert: true, new: true }
+  );
 };
 
-exports.getTokens = () => {
-    if (!fs.existsSync(TOKEN_FILE)) return null;
-    try {
-        const data = fs.readFileSync(TOKEN_FILE, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        console.error('Error reading Zoho tokens:', error);
-        return null;
-    }
+exports.getTokens = async () => {
+  try {
+    const doc = await Token.findOne({ key: 'zoho' }).lean();
+    if (!doc) return null;
+    const { _id, __v, key, ...tokens } = doc;
+    return tokens;
+  } catch (error) {
+    console.error('Error reading Zoho tokens:', error);
+    return null;
+  }
 };
