@@ -66,6 +66,26 @@ const ensureValidToken = async () => {
 
 // ─── Route handlers ──────────────────────────────────────────────────────────
 
+// @desc    Check Zoho connection status
+// @route   GET /api/auth/zoho/status
+// @access  Private (Admin only)
+exports.getStatus = asyncHandler(async (req, res) => {
+  const tokens = await tokenManager.getTokens();
+  if (!tokens) {
+    return res.json({ connected: false, message: 'No tokens found. Visit /api/auth/zoho/init to authorize.' });
+  }
+  const ageMs      = Date.now() - tokens.timestamp;
+  const expiresMs  = (tokens.expires_in - 60) * 1000;
+  const isExpired  = ageMs > expiresMs;
+  res.json({
+    connected:     true,
+    api_domain:    tokens.api_domain,
+    token_expired: isExpired,
+    expires_in_s:  Math.max(0, Math.round((expiresMs - ageMs) / 1000)),
+    has_refresh:   !!tokens.refresh_token,
+  });
+});
+
 // @desc    Initiate Zoho OAuth flow
 // @route   GET /api/auth/zoho/init
 // @access  Private (Admin only)
