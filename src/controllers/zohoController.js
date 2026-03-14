@@ -149,7 +149,7 @@ exports.pushInquiryToBigin = async (inquiryData) => {
   try {
     const tokens      = await ensureValidToken();
     const apiDomain   = tokens.api_domain || 'https://www.zohoapis.com';
-    const record = {
+    const contactFields = {
       ...splitName(inquiryData.name),
       Email:       inquiryData.email,
       Phone:       inquiryData.phone,
@@ -162,9 +162,9 @@ exports.pushInquiryToBigin = async (inquiryData) => {
       ].join('\n'),
     };
 
-    if (inquiryData.propertyCode) record.Property_Code = inquiryData.propertyCode;
+    if (inquiryData.propertyCode) contactFields.Property_Code = inquiryData.propertyCode;
 
-    const contactData = { data: [record] };
+    const contactData = { data: [contactFields] };
 
     const response  = await axios.post(`${apiDomain}/bigin/v1/Contacts`, contactData, { headers: biginHeaders(tokens.access_token) });
     const record    = response.data?.data?.[0];
