@@ -66,6 +66,19 @@ const ensureValidToken = async () => {
 
 // ─── Route handlers ──────────────────────────────────────────────────────────
 
+// @desc    Get Bigin Clients module field API names (for debugging)
+// @route   GET /api/auth/zoho/fields
+// @access  Private (Admin only)
+exports.getFields = asyncHandler(async (req, res) => {
+  const tokens    = await ensureValidToken();
+  const apiDomain = tokens.api_domain || 'https://www.zohoapis.com';
+  const response  = await axios.get(`${apiDomain}/bigin/v1/settings/fields?module=Contacts`, {
+    headers: biginHeaders(tokens.access_token),
+  });
+  const fields = response.data?.fields?.map(f => ({ label: f.field_label, api_name: f.api_name, type: f.data_type }));
+  res.json({ success: true, fields });
+});
+
 // @desc    Check Zoho connection status
 // @route   GET /api/auth/zoho/status
 // @access  Private (Admin only)
@@ -165,8 +178,9 @@ exports.pushInquiryToBigin = async (inquiryData) => {
     const response  = await axios.post(`${apiDomain}/bigin/v1/Contacts`, contactData, { headers: biginHeaders(tokens.access_token) });
     const record    = response.data?.data?.[0];
     if (record?.status === 'error') {
+      const errMsg = record.message || JSON.stringify(record);
       console.error('Bigin record error:', record);
-      return null;
+      return { error: errMsg };
     }
     const contactId = record?.details?.id || null;
     return { ...response.data, contactId };
@@ -184,7 +198,7 @@ exports.deleteContactFromBigin = async (contactId) => {
   try {
     const tokens    = await ensureValidToken();
     const apiDomain = tokens.api_domain || 'https://www.zohoapis.com';
-    await axios.delete(`${apiDomain}/bigin/v1/Clients/${contactId}`, { headers: biginHeaders(tokens.access_token) });
+    await axios.delete(`${apiDomain}/bigin/v1/Contacts/${contactId}`, { headers: biginHeaders(tokens.access_token) });
     return true;
   } catch (error) {
     console.error('Bigin Delete Error:', error.response?.data || error.message);
