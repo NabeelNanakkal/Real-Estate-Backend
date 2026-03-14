@@ -101,9 +101,10 @@ exports.getProperties = asyncHandler(async (req, res) => {
   if (req.query.agent) query.agent = req.query.agent;
   if (status)  query.status = status;
   if (search)  query.$or = [
-    { title:    new RegExp(search, 'i') },
-    { location: new RegExp(search, 'i') },
-    { city:     new RegExp(search, 'i') },
+    { title:     new RegExp(search, 'i') },
+    { location:  new RegExp(search, 'i') },
+    { city:      new RegExp(search, 'i') },
+    { listingId: new RegExp(search, 'i') },
   ];
   const currentListingType = listingType || req.query.type;
   if (currentListingType) {
