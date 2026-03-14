@@ -138,7 +138,7 @@ exports.pushInquiryToBigin = async (inquiryData) => {
       }],
     };
 
-    const response  = await axios.post(`${apiDomain}/bigin/v1/Clients`, contactData, { headers: biginHeaders(tokens.access_token) });
+    const response  = await axios.post(`${apiDomain}/bigin/v1/Contacts`, contactData, { headers: biginHeaders(tokens.access_token) });
     const record    = response.data?.data?.[0];
     if (record?.status === 'error') {
       console.error('Bigin record error:', record);
