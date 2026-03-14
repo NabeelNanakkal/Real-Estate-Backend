@@ -153,16 +153,12 @@ exports.pushInquiryToBigin = async (inquiryData) => {
       ...splitName(inquiryData.name),
       Email:       inquiryData.email,
       Phone:       inquiryData.phone,
-      Description: [
-        `📋 PROPERTY INQUIRY`,
-        ``,
-        `Property : ${inquiryData.propertyTitle}`,
-        ``,
-        `Message  : ${inquiryData.message}`,
-      ].join('\n'),
+      Description: inquiryData.message,
+      Lead_Source: inquiryData.source || 'Enquiry',
     };
 
-    if (inquiryData.propertyCode) contactFields.Property_Code = inquiryData.propertyCode;
+    if (inquiryData.propertyTitle) contactFields.Property      = inquiryData.propertyTitle;
+    if (inquiryData.propertyCode)  contactFields.Property_Code = inquiryData.propertyCode;
 
     const contactData = { data: [contactFields] };
 
