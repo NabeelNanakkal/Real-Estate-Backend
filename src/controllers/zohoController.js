@@ -136,8 +136,13 @@ exports.pushInquiryToBigin = async (inquiryData) => {
       }],
     };
 
-    const response  = await axios.post(`${apiDomain}/bigin/v1/Contacts`, contactData, { headers: biginHeaders(tokens.access_token) });
-    const contactId = response.data?.data?.[0]?.details?.id || null;
+    const response  = await axios.post(`${apiDomain}/bigin/v1/Clients`, contactData, { headers: biginHeaders(tokens.access_token) });
+    const record    = response.data?.data?.[0];
+    if (record?.status === 'error') {
+      console.error('Bigin record error:', record);
+      return null;
+    }
+    const contactId = record?.details?.id || null;
     return { ...response.data, contactId };
   } catch (error) {
     console.error('Bigin Sync Error:', error.response?.data || error.message);
@@ -150,7 +155,7 @@ exports.deleteContactFromBigin = async (contactId) => {
   try {
     const tokens    = await ensureValidToken();
     const apiDomain = tokens.api_domain || 'https://www.zohoapis.com';
-    await axios.delete(`${apiDomain}/bigin/v1/Contacts/${contactId}`, { headers: biginHeaders(tokens.access_token) });
+    await axios.delete(`${apiDomain}/bigin/v1/Clients/${contactId}`, { headers: biginHeaders(tokens.access_token) });
     return true;
   } catch (error) {
     console.error('Bigin Delete Error:', error.response?.data || error.message);
