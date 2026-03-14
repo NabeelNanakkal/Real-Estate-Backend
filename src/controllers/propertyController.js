@@ -92,13 +92,19 @@ exports.getPublicStats = asyncHandler(async (req, res) => {
 // @route   GET /api/properties
 // @access  Public
 exports.getProperties = asyncHandler(async (req, res) => {
-  const { listingType, propertyType, minPrice, maxPrice, bedrooms, city, featured } = req.query;
+  const { listingType, propertyType, minPrice, maxPrice, bedrooms, city, featured, search, status } = req.query;
   const page  = parseInt(req.query.page)  || 1;
   const limit = parseInt(req.query.limit) || DEFAULT_PAGE_LIMIT;
   const skip  = (page - 1) * limit;
 
   const query = {};
   if (req.query.agent) query.agent = req.query.agent;
+  if (status)  query.status = status;
+  if (search)  query.$or = [
+    { title:    new RegExp(search, 'i') },
+    { location: new RegExp(search, 'i') },
+    { city:     new RegExp(search, 'i') },
+  ];
   const currentListingType = listingType || req.query.type;
   if (currentListingType) {
     if (currentListingType.includes(',')) {
@@ -136,7 +142,12 @@ exports.getProperties = asyncHandler(async (req, res) => {
     Property.find(query)
       .populate('agent', 'name email phone avatar')
       .populate('category', 'title')
-      .sort({ createdAt: -1 })
+      .sort(
+        req.query.sort === 'price_high' ? { price: -1 } :
+        req.query.sort === 'price_low'  ? { price:  1 } :
+        req.query.sort === 'views'      ? { views: -1 } :
+        { createdAt: -1 }
+      )
       .skip(skip)
       .limit(limit)
   ]);
