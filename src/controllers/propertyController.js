@@ -247,18 +247,22 @@ exports.updateProperty = asyncHandler(async (req, res) => {
   const updated = await Property.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
 
   // Sync to Zoho Bigin Products (fire-and-forget)
-  Property.findById(updated._id).populate('agent', 'name').populate('category', 'name').then((populated) => {
+  Property.findById(updated._id).populate('agent', 'name').populate('category', 'name').then(async (populated) => {
     const doc = populated || updated;
-    if (property.crmProductId) {
-      return updatePropertyInBigin(property.crmProductId, doc);
+    const crmId = property.crmProductId || updated.crmProductId;
+
+    if (crmId) {
+      const result = await updatePropertyInBigin(crmId, doc);
+      if (result?.error) console.error('CRM update failed:', result.error);
     } else {
-      return pushPropertyToBigin(doc).then(async (result) => {
-        if (result?.productId) {
-          await Property.findByIdAndUpdate(updated._id, { crmProductId: result.productId });
-        }
-      });
+      const result = await pushPropertyToBigin(doc);
+      if (result?.error) {
+        console.error('CRM push failed:', result.error);
+      } else if (result?.productId) {
+        await Property.findByIdAndUpdate(updated._id, { crmProductId: result.productId });
+      }
     }
-  }).catch(() => {});
+  }).catch((err) => console.error('CRM sync error:', err.message));
 
   res.json({ success: true, data: updated });
 });

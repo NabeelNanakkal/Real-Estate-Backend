@@ -220,6 +220,7 @@ const buildProductPayload = (property) => {
     Location:            property.location || '',
     Area:                property.area || '',
     Property_Category:   categoryName,
+    Property_Type:       property.propertyType || '',
     EWA_Type:            property.ewaType || '',
   };
 };
@@ -302,11 +303,13 @@ exports.pushSellerLeadToBigin = async (lead) => {
 
     const contactFields = {
       ...splitName(lead.name),
-      Email:       lead.email,
-      Phone:       lead.phone,
-      Lead_Source: 'Sell My Property',
+      Email:         lead.email,
+      Phone:         lead.phone,
+      Lead_Source:   'Sell My Property',
+      Property_Type: lead.propertyType || '',
       Description: [
         `Location: ${lead.location}`,
+        lead.propertyType ? `Property Type: ${lead.propertyType}` : '',
         lead.sqm ? `Area: ${lead.sqm} sqm` : '',
         lead.message ? `Note: ${lead.message}` : '',
       ].filter(Boolean).join('\n'),

@@ -19,7 +19,7 @@ exports.createSellerLead = asyncHandler(async (req, res) => {
   // Fire-and-forget Zoho sync
   setImmediate(async () => {
     try {
-      const result = await pushSellerLeadToBigin({ name, email, phone, location, sqm, message });
+      const result = await pushSellerLeadToBigin({ name, email, phone, location, sqm, propertyType, message });
       if (result?.contactId) {
         await SellerLead.findByIdAndUpdate(lead._id, { crmSyncStatus: 'success', crmContactId: result.contactId });
       } else {
