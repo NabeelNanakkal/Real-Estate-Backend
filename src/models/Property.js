@@ -28,7 +28,7 @@ const propertySchema = new mongoose.Schema({
   },
   evaType: {
     type: String,
-    enum: ['eva-exclusive', 'eva-inclusive', ''],
+    enum: ['ewa-exclusive', 'ewa-inclusive', ''],
     default: ''
   },
   price: {
