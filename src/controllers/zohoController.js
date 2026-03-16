@@ -72,11 +72,12 @@ const ensureValidToken = async () => {
 exports.getFields = asyncHandler(async (req, res) => {
   const tokens    = await ensureValidToken();
   const apiDomain = tokens.api_domain || 'https://www.zohoapis.com';
-  const response  = await axios.get(`${apiDomain}/bigin/v1/settings/fields?module=Contacts`, {
+  const module    = req.query.module || 'Contacts';
+  const response  = await axios.get(`${apiDomain}/bigin/v1/settings/fields?module=${module}`, {
     headers: biginHeaders(tokens.access_token),
   });
   const fields = response.data?.fields?.map(f => ({ label: f.field_label, api_name: f.api_name, type: f.data_type }));
-  res.json({ success: true, fields });
+  res.json({ success: true, module, fields });
 });
 
 // @desc    Check Zoho connection status
@@ -269,6 +270,28 @@ exports.updatePropertyInBigin = async (crmProductId, property) => {
     return { error: error.message };
   }
 };
+
+// @desc    Manual re-sync a property to Bigin Products
+// @route   POST /api/auth/zoho/sync-property/:id
+// @access  Private (Admin only)
+exports.syncProperty = asyncHandler(async (req, res) => {
+  const Property = require('../models/Property');
+  const property = await Property.findById(req.params.id).populate('agent', 'name').populate('category', 'title');
+  if (!property) return res.status(404).json({ success: false, message: 'Property not found' });
+
+  let result;
+  if (property.crmProductId) {
+    result = await exports.updatePropertyInBigin(property.crmProductId, property);
+  } else {
+    result = await exports.pushPropertyToBigin(property);
+    if (result?.productId) {
+      await Property.findByIdAndUpdate(property._id, { crmProductId: result.productId });
+    }
+  }
+
+  if (result?.error) return res.status(400).json({ success: false, error: result.error });
+  res.json({ success: true, crmProductId: property.crmProductId || result?.productId, result });
+});
 
 // @desc    Delete property from Bigin Products
 exports.deletePropertyFromBigin = async (crmProductId) => {

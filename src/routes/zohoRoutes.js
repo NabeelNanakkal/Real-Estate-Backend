@@ -8,5 +8,6 @@ router.get('/init', zohoController.initiateOAuth);
 router.get('/callback', zohoController.handleCallback);
 router.post('/webhook', zohoController.handleWebhook);
 router.post('/subscribe', zohoController.subscribeNotifications);
+router.post('/sync-property/:id', zohoController.syncProperty);
 
 module.exports = router;
