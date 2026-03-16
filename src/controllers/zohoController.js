@@ -205,7 +205,7 @@ const buildProductPayload = (property) => {
       : `${property.commissionValue} (Fixed)`
     : '';
 
-  const categoryName = property.category?.name || '';
+  const categoryName = property.category?.title || '';
 
   return {
     Product_Name:        property.title,
