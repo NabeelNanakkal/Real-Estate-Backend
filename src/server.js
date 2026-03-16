@@ -44,8 +44,9 @@ app.use('/api/users',      require('./routes/userRoutes'));
 app.use('/api/auth/zoho',  require('./routes/zohoRoutes'));
 
 // Core
-app.use('/api/properties', require('./routes/propertyRoutes'));
-app.use('/api/inquiries',  require('./routes/inquiryRoutes'));
+app.use('/api/properties',   require('./routes/propertyRoutes'));
+app.use('/api/inquiries',    require('./routes/inquiryRoutes'));
+app.use('/api/seller-leads', require('./routes/sellerLeadRoutes'));
 
 // Content
 app.use('/api/about',         require('./routes/aboutRoutes'));

@@ -195,13 +195,28 @@ exports.pushInquiryToBigin = async (inquiryData) => {
 
 // ─── Property → Bigin Products sync ──────────────────────────────────────────
 
-const buildProductPayload = (property) => ({
-  Product_Name:   property.title,
-  Product_Code:   property.listingId,
-  Unit_Price:     property.price,
-  Product_Active: property.status === 'active',
-  Description:    property.description || '',
-});
+const buildProductPayload = (property) => {
+  const agentName = property.agent?.name || property.agent || '';
+
+  const commissionDisplay = property.commissionValue
+    ? property.commissionType === 'percentage'
+      ? `${property.commissionValue}%`
+      : `${property.commissionValue} (Fixed)`
+    : '';
+
+  return {
+    Product_Name:        property.title,
+    Product_Code:        property.listingId,
+    Unit_Price:          property.price,
+    Product_Active:      property.status === 'active',
+    Description:         property.description || '',
+    Product_Status:      property.status || '',
+    Owner_Name:          property.ownerName || '',
+    Agent:               agentName,
+    VAT_Number:          property.vatNumber || '',
+    Agreed_Commission:   commissionDisplay,
+  };
+};
 
 // @desc    Push property to Bigin Products
 exports.pushPropertyToBigin = async (property) => {
@@ -270,6 +285,43 @@ exports.deleteContactFromBigin = async (contactId) => {
   } catch (error) {
     console.error('Bigin Delete Error:', error.response?.data || error.message);
     return false;
+  }
+};
+
+// @desc    Push seller lead to Bigin Contacts
+exports.pushSellerLeadToBigin = async (lead) => {
+  try {
+    const tokens    = await ensureValidToken();
+    const apiDomain = tokens.api_domain || 'https://www.zohoapis.com';
+
+    const contactFields = {
+      ...splitName(lead.name),
+      Email:       lead.email,
+      Phone:       lead.phone,
+      Lead_Source: 'Sell My Property',
+      Description: [
+        `Location: ${lead.location}`,
+        lead.sqm ? `Area: ${lead.sqm} sqm` : '',
+        lead.message ? `Note: ${lead.message}` : '',
+      ].filter(Boolean).join('\n'),
+    };
+
+    const response = await axios.post(
+      `${apiDomain}/bigin/v1/Contacts`,
+      { data: [contactFields] },
+      { headers: biginHeaders(tokens.access_token) }
+    );
+
+    const record = response.data?.data?.[0];
+    if (record?.status === 'error') {
+      console.error('Bigin seller lead error:', record);
+      return { error: record.message };
+    }
+    return { contactId: record?.details?.id || null, ...response.data };
+  } catch (error) {
+    const msg = error.response?.data ? JSON.stringify(error.response.data) : error.message;
+    console.error('Bigin Seller Lead Sync Error:', msg);
+    return { error: msg };
   }
 };
 

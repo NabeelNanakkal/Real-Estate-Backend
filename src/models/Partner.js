@@ -11,6 +11,10 @@ const PartnerSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please add an icon (emoji or SVG/URL)']
   },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
   createdAt: {
     type: Date,
     default: Date.now

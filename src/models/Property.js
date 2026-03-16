@@ -26,7 +26,7 @@ const propertySchema = new mongoose.Schema({
     enum: ['monthly', 'yearly', ''],
     default: ''
   },
-  evaType: {
+  ewaType: {
     type: String,
     enum: ['ewa-exclusive', 'ewa-inclusive', ''],
     default: ''
@@ -133,6 +133,23 @@ const propertySchema = new mongoose.Schema({
   },
   crmProductId: {
     type: String,
+    default: null
+  },
+  ownerName: {
+    type: String,
+    default: ''
+  },
+  vatNumber: {
+    type: String,
+    default: ''
+  },
+  commissionType: {
+    type: String,
+    enum: ['percentage', 'fixed', ''],
+    default: ''
+  },
+  commissionValue: {
+    type: Number,
     default: null
   }
 }, {

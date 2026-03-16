@@ -93,7 +93,7 @@ exports.getPublicStats = asyncHandler(async (req, res) => {
 // @route   GET /api/properties
 // @access  Public
 exports.getProperties = asyncHandler(async (req, res) => {
-  const { listingType, propertyType, minPrice, maxPrice, bedrooms, city, featured, search, status } = req.query;
+  const { listingType, propertyType, minPrice, maxPrice, bedrooms, bathrooms, city, featured, search, status } = req.query;
   const page  = parseInt(req.query.page)  || 1;
   const limit = parseInt(req.query.limit) || DEFAULT_PAGE_LIMIT;
   const skip  = (page - 1) * limit;
@@ -133,6 +133,7 @@ exports.getProperties = asyncHandler(async (req, res) => {
   if (city)         query.city          = new RegExp(city, 'i');
   if (featured)     query.featured      = featured === 'true';
   if (bedrooms)     query.bedrooms      = { $gte: parseInt(bedrooms) };
+  if (bathrooms)    query.bathrooms     = { $gte: parseInt(bathrooms) };
   if (minPrice || maxPrice) {
     query.price = {};
     if (minPrice) query.price.$gte = parseInt(minPrice);
@@ -145,8 +146,8 @@ exports.getProperties = asyncHandler(async (req, res) => {
       .populate('agent', 'name email phone avatar')
       .populate('category', 'title')
       .sort(
-        req.query.sort === 'price_high' ? { price: -1 } :
-        req.query.sort === 'price_low'  ? { price:  1 } :
+        req.query.sort === 'price-high' ? { price: -1 } :
+        req.query.sort === 'price-low'  ? { price:  1 } :
         req.query.sort === 'views'      ? { views: -1 } :
         { createdAt: -1 }
       )
@@ -171,7 +172,7 @@ exports.getProperty = asyncHandler(async (req, res) => {
     { $inc: { views: 1 } },
     { new: true }
   )
-    .populate('agent', 'name email phone company')
+    .populate('agent', 'name email phone whatsapp company avatar')
     .populate('category', 'title');
 
   res.json({ success: true, data: property });

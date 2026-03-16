@@ -59,17 +59,46 @@ exports.createInquiry = asyncHandler(async (req, res) => {
 // @route   GET /api/inquiries
 // @access  Private (Admin/Agent)
 exports.getInquiries = asyncHandler(async (req, res) => {
+  const { status, search, page = 1, limit = 15 } = req.query;
+
   let filter = {};
   if (req.user.role !== 'admin') {
     const agentPropertyIds = await Property.find({ agent: req.user.id }).distinct('_id');
     filter = { property: { $in: agentPropertyIds } };
   }
 
-  const inquiries = await Inquiry.find(filter)
-    .populate('property', 'title location.address')
-    .sort({ createdAt: -1 });
+  if (status) filter.status = status;
+  if (search) {
+    filter.$or = [
+      { name:  { $regex: search, $options: 'i' } },
+      { email: { $regex: search, $options: 'i' } },
+      { phone: { $regex: search, $options: 'i' } },
+    ];
+  }
 
-  res.json({ success: true, count: inquiries.length, data: inquiries });
+  const skip  = (parseInt(page) - 1) * parseInt(limit);
+  const [total, newCount, inquiries] = await Promise.all([
+    Inquiry.countDocuments(filter),
+    Inquiry.countDocuments({ ...filter, status: 'new' }),
+    Inquiry.find(filter)
+      .populate('property', 'title location.address')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit)),
+  ]);
+
+  res.json({
+    success: true,
+    count: total,
+    data: inquiries,
+    pagination: {
+      total,
+      pages: Math.ceil(total / parseInt(limit)),
+      currentPage: parseInt(page),
+      newCount,
+      contactedCount: total - newCount,
+    },
+  });
 });
 
 // @desc    Update inquiry status

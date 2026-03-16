@@ -5,15 +5,45 @@ const asyncHandler = require('../utils/asyncHandler');
 // @route   GET /api/users
 // @access  Private/Admin
 exports.getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find().select('-password -activeToken').sort({ createdAt: -1 });
-  res.json({ success: true, data: users });
+  const { search, role, sort = 'newest', page = 1, limit = 8 } = req.query;
+
+  const query = {};
+  if (role && role !== 'all') query.role = role;
+  if (search) {
+    query.$or = [
+      { name:  new RegExp(search, 'i') },
+      { email: new RegExp(search, 'i') },
+      { phone: new RegExp(search, 'i') },
+    ];
+  }
+
+  const sortMap = {
+    newest:    { createdAt: -1 },
+    oldest:    { createdAt:  1 },
+    name_asc:  { name:       1 },
+    name_desc: { name:      -1 },
+  };
+
+  const skip  = (parseInt(page) - 1) * parseInt(limit);
+  const total = await User.countDocuments(query);
+  const users = await User.find(query)
+    .select('-password -activeToken')
+    .sort(sortMap[sort] || sortMap.newest)
+    .skip(skip)
+    .limit(parseInt(limit));
+
+  res.json({
+    success: true,
+    data: users,
+    pagination: { total, pages: Math.ceil(total / parseInt(limit)), currentPage: parseInt(page), limit: parseInt(limit) }
+  });
 });
 
 // @desc    Create a user (admin only)
 // @route   POST /api/users
 // @access  Private/Admin
 exports.createUser = asyncHandler(async (req, res) => {
-  const { name, email, password, role, phone } = req.body;
+  const { name, email, password, role, phone, whatsapp } = req.body;
 
   if (!name || !email || !password) {
     return res.status(400).json({ success: false, message: 'Name, email and password are required.' });
@@ -24,11 +54,12 @@ exports.createUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'A user with this email already exists.' });
   }
 
-  const user = await User.create({ name, email, password, role: role || 'agent', phone });
+  const avatar = req.file ? (req.file.path || `/uploads/${req.file.filename}`) : undefined;
+  const user = await User.create({ name, email, password, role: role || 'agent', phone, whatsapp, ...(avatar && { avatar }) });
 
   res.status(201).json({
     success: true,
-    data: { _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, createdAt: user.createdAt }
+    data: { _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, whatsapp: user.whatsapp, avatar: user.avatar, createdAt: user.createdAt }
   });
 });
 
@@ -36,7 +67,7 @@ exports.createUser = asyncHandler(async (req, res) => {
 // @route   PUT /api/users/:id
 // @access  Private/Admin
 exports.updateUser = asyncHandler(async (req, res) => {
-  const { name, email, role, phone, password } = req.body;
+  const { name, email, role, phone, whatsapp, password } = req.body;
 
   const user = await User.findById(req.params.id);
   if (!user) {
@@ -46,14 +77,16 @@ exports.updateUser = asyncHandler(async (req, res) => {
   if (name)  user.name  = name;
   if (email) user.email = email;
   if (role)  user.role  = role;
-  if (phone !== undefined) user.phone = phone;
-  if (password) user.password = password; // pre-save hook hashes it
+  if (phone    !== undefined) user.phone    = phone;
+  if (whatsapp !== undefined) user.whatsapp = whatsapp;
+  if (password) user.password = password;
+  if (req.file) user.avatar = req.file.path || `/uploads/${req.file.filename}`;
 
   await user.save();
 
   res.json({
     success: true,
-    data: { _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, createdAt: user.createdAt }
+    data: { _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, whatsapp: user.whatsapp, avatar: user.avatar, createdAt: user.createdAt }
   });
 });
 

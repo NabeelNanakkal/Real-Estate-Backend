@@ -2,11 +2,12 @@ const Partner = require('../models/Partner');
 const asyncHandler = require('../utils/asyncHandler');
 const { MONGO_DUPLICATE_KEY } = require('../constants');
 
-// @desc    Get all partners
+// @desc    Get partners
 // @route   GET /api/partners
-// @access  Public
+// @access  Public (active only) / Admin (all via ?all=true)
 exports.getPartners = asyncHandler(async (req, res) => {
-  const partners = await Partner.find().sort({ createdAt: -1 });
+  const query = req.query.all === 'true' ? {} : { isActive: true };
+  const partners = await Partner.find(query).sort({ createdAt: -1 });
   res.json({ success: true, count: partners.length, data: partners });
 });
 
@@ -28,6 +29,19 @@ exports.addPartner = asyncHandler(async (req, res) => {
     }
     res.status(400).json({ success: false, message: err.message || 'Validation failed' });
   }
+});
+
+// @desc    Toggle partner active status
+// @route   PUT /api/partners/:id/toggle
+// @access  Private (Admin)
+exports.togglePartnerStatus = asyncHandler(async (req, res) => {
+  const partner = await Partner.findById(req.params.id);
+  if (!partner) {
+    return res.status(404).json({ success: false, message: 'Partner not found' });
+  }
+  partner.isActive = !partner.isActive;
+  await partner.save();
+  res.json({ success: true, data: partner });
 });
 
 // @desc    Delete a partner
