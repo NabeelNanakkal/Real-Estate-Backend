@@ -170,8 +170,9 @@ exports.pushInquiryToBigin = async (inquiryData) => {
       Lead_Source: inquiryData.source || 'Enquiry',
     };
 
-    if (inquiryData.propertyTitle) contactFields.Property = inquiryData.propertyTitle;
-    if (inquiryData.propertyCode)  contactFields.Property_Code = inquiryData.propertyCode;
+    if (inquiryData.propertyTitle) contactFields.Property      = inquiryData.propertyTitle;
+    if (inquiryData.propertyCode)  contactFields.Property_Code  = inquiryData.propertyCode;
+    if (inquiryData.propertyType)  contactFields.Property_Type  = inquiryData.propertyType;
 
     const contactData = { data: [contactFields] };
 
