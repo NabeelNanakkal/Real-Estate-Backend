@@ -277,6 +277,65 @@ exports.updatePropertyInBigin = async (crmProductId, property) => {
   }
 };
 
+// @desc    Debug: test full CRM sync for a property and return all details
+// @route   GET /api/auth/zoho/debug-property/:id
+// @access  Private (Admin only)
+exports.debugProperty = asyncHandler(async (req, res) => {
+  const Property = require('../models/Property');
+
+  // 1. Load property
+  const property = await Property.findById(req.params.id).populate('agent', 'name').populate('category', 'title');
+  if (!property) return res.status(404).json({ success: false, message: 'Property not found' });
+
+  // 2. Check token
+  let tokens;
+  try {
+    tokens = await ensureValidToken();
+  } catch (err) {
+    return res.json({ success: false, step: 'token', error: err.message });
+  }
+
+  const apiDomain = tokens.api_domain || 'https://www.zohoapis.com';
+  const payload   = buildProductPayload(property);
+
+  // 3. Try the Bigin call and return raw response
+  try {
+    let biginResponse;
+    if (property.crmProductId) {
+      biginResponse = await axios.put(
+        `${apiDomain}/bigin/v1/Products/${property.crmProductId}`,
+        { data: [{ id: property.crmProductId, ...payload }] },
+        { headers: biginHeaders(tokens.access_token) }
+      );
+    } else {
+      biginResponse = await axios.post(
+        `${apiDomain}/bigin/v1/Products`,
+        { data: [payload] },
+        { headers: biginHeaders(tokens.access_token) }
+      );
+    }
+
+    const record = biginResponse.data?.data?.[0];
+    if (record?.status !== 'error' && record?.details?.id) {
+      await Property.findByIdAndUpdate(property._id, { crmProductId: record.details.id });
+    }
+
+    res.json({
+      success: true,
+      crmProductId:   property.crmProductId || null,
+      payloadSent:    payload,
+      biginResponse:  biginResponse.data,
+    });
+  } catch (err) {
+    res.json({
+      success:      false,
+      step:         'bigin_call',
+      payloadSent:  payload,
+      error:        err.response?.data || err.message,
+    });
+  }
+});
+
 // @desc    Manual re-sync a property to Bigin Products
 // @route   POST /api/auth/zoho/sync-property/:id
 // @access  Private (Admin only)
