@@ -193,6 +193,73 @@ exports.pushInquiryToBigin = async (inquiryData) => {
   }
 };
 
+// ─── Property → Bigin Products sync ──────────────────────────────────────────
+
+const buildProductPayload = (property) => ({
+  Product_Name:   property.title,
+  Product_Code:   property.listingId,
+  Unit_Price:     property.price,
+  Product_Active: property.status === 'active',
+  Description:    property.description || '',
+});
+
+// @desc    Push property to Bigin Products
+exports.pushPropertyToBigin = async (property) => {
+  try {
+    const tokens    = await ensureValidToken();
+    const apiDomain = tokens.api_domain || 'https://www.zohoapis.com';
+    const response  = await axios.post(
+      `${apiDomain}/bigin/v1/Products`,
+      { data: [buildProductPayload(property)] },
+      { headers: biginHeaders(tokens.access_token) }
+    );
+    const record = response.data?.data?.[0];
+    if (record?.status === 'error') {
+      console.error('Bigin Products create error:', record);
+      return { error: record.message };
+    }
+    return { productId: record?.details?.id || null };
+  } catch (error) {
+    console.error('Bigin Products Push Error:', error.response?.data || error.message);
+    return { error: error.message };
+  }
+};
+
+// @desc    Update property in Bigin Products
+exports.updatePropertyInBigin = async (crmProductId, property) => {
+  try {
+    const tokens    = await ensureValidToken();
+    const apiDomain = tokens.api_domain || 'https://www.zohoapis.com';
+    const response  = await axios.put(
+      `${apiDomain}/bigin/v1/Products/${crmProductId}`,
+      { data: [{ id: crmProductId, ...buildProductPayload(property) }] },
+      { headers: biginHeaders(tokens.access_token) }
+    );
+    const record = response.data?.data?.[0];
+    if (record?.status === 'error') {
+      console.error('Bigin Products update error:', record);
+      return { error: record.message };
+    }
+    return { success: true };
+  } catch (error) {
+    console.error('Bigin Products Update Error:', error.response?.data || error.message);
+    return { error: error.message };
+  }
+};
+
+// @desc    Delete property from Bigin Products
+exports.deletePropertyFromBigin = async (crmProductId) => {
+  try {
+    const tokens    = await ensureValidToken();
+    const apiDomain = tokens.api_domain || 'https://www.zohoapis.com';
+    await axios.delete(`${apiDomain}/bigin/v1/Products/${crmProductId}`, { headers: biginHeaders(tokens.access_token) });
+    return true;
+  } catch (error) {
+    console.error('Bigin Products Delete Error:', error.response?.data || error.message);
+    return false;
+  }
+};
+
 // @desc    Delete contact from Bigin
 exports.deleteContactFromBigin = async (contactId) => {
   try {

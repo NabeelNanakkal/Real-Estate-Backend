@@ -3,6 +3,7 @@ const Category = require('../models/Category');
 const Inquiry = require('../models/Inquiry');
 const asyncHandler = require('../utils/asyncHandler');
 const { DEFAULT_PAGE_LIMIT, LISTING_ID_PREFIX } = require('../constants');
+const { pushPropertyToBigin, updatePropertyInBigin, deletePropertyFromBigin } = require('./zohoController');
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -119,7 +120,7 @@ exports.getProperties = asyncHandler(async (req, res) => {
     if (categoryMatch) {
       query.category = categoryMatch._id;
     } else {
-      query.category = null; // force empty result if category title doesn't exist
+      query.category = null;
     }
   }
   if (propertyType) {
@@ -202,6 +203,14 @@ exports.createProperty = asyncHandler(async (req, res) => {
   }
 
   const property = await Property.create(propertyData);
+
+  // Sync to Zoho Bigin Products (fire-and-forget)
+  pushPropertyToBigin(property).then(async (result) => {
+    if (result?.productId) {
+      await Property.findByIdAndUpdate(property._id, { crmProductId: result.productId });
+    }
+  }).catch(() => {});
+
   res.status(201).json({ success: true, data: property });
 });
 
@@ -233,6 +242,18 @@ exports.updateProperty = asyncHandler(async (req, res) => {
   delete updateData.keepExistingImages;
 
   const updated = await Property.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
+
+  // Sync to Zoho Bigin Products (fire-and-forget)
+  if (property.crmProductId) {
+    updatePropertyInBigin(property.crmProductId, updated).catch(() => {});
+  } else {
+    pushPropertyToBigin(updated).then(async (result) => {
+      if (result?.productId) {
+        await Property.findByIdAndUpdate(updated._id, { crmProductId: result.productId });
+      }
+    }).catch(() => {});
+  }
+
   res.json({ success: true, data: updated });
 });
 
@@ -250,6 +271,13 @@ exports.deleteProperty = asyncHandler(async (req, res) => {
     return res.status(403).json({ success: false, message: 'Not authorized to delete this property' });
   }
 
+  const crmProductId = property.crmProductId;
   await property.deleteOne();
+
+  // Sync to Zoho Bigin Products (fire-and-forget)
+  if (crmProductId) {
+    deletePropertyFromBigin(crmProductId).catch(() => {});
+  }
+
   res.json({ success: true, data: {} });
 });
