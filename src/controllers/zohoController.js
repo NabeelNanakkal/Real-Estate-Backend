@@ -209,21 +209,20 @@ const buildProductPayload = (property) => {
   const categoryName = property.category?.title || '';
 
   return {
-    Product_Name:        property.title,
-    Product_Code:        property.listingId,
-    Unit_Price:          property.price,
-    Product_Active:      property.status === 'active',
-    Description:         property.description || '',
-    Product_Status:      property.status || '',
-    Owner_Name:          property.ownerName || '',
-    Agent:               agentName,
-    VAT_Number:          property.vatNumber || '',
-    Agreed_Commission:   commissionDisplay,
-    Location:            property.location || '',
-    Area:                property.area || '',
-    Property_Category:   categoryName,
-    Property_Type:       property.propertyType || '',
-    EWA_Type:            property.ewaType || '',
+    Product_Name:      property.title,
+    Product_Code:      property.listingId,
+    Unit_Price:        property.price,
+    Price_Rent:        property.price,
+    Product_Active:    property.status === 'active',
+    Description:       property.description || '',
+    Product_Status:    property.status || '',
+    Owner_Name:        property.ownerName || '',
+    Agent:             agentName,
+    VAT_Number:        property.vatNumber || '',
+    Agreed_Commission: commissionDisplay,
+    Location:          property.location || '',
+    Area:              property.area ? String(property.area) : '',
+    Product_Category:  categoryName,
   };
 };
 
