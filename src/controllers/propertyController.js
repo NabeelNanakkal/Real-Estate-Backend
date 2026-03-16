@@ -206,7 +206,9 @@ exports.createProperty = asyncHandler(async (req, res) => {
   const property = await Property.create(propertyData);
 
   // Sync to Zoho Bigin Products (fire-and-forget)
-  pushPropertyToBigin(property).then(async (result) => {
+  Property.findById(property._id).populate('agent', 'name').populate('category', 'name').then((populated) => {
+    return pushPropertyToBigin(populated || property);
+  }).then(async (result) => {
     if (result?.productId) {
       await Property.findByIdAndUpdate(property._id, { crmProductId: result.productId });
     }
@@ -245,15 +247,18 @@ exports.updateProperty = asyncHandler(async (req, res) => {
   const updated = await Property.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
 
   // Sync to Zoho Bigin Products (fire-and-forget)
-  if (property.crmProductId) {
-    updatePropertyInBigin(property.crmProductId, updated).catch(() => {});
-  } else {
-    pushPropertyToBigin(updated).then(async (result) => {
-      if (result?.productId) {
-        await Property.findByIdAndUpdate(updated._id, { crmProductId: result.productId });
-      }
-    }).catch(() => {});
-  }
+  Property.findById(updated._id).populate('agent', 'name').populate('category', 'name').then((populated) => {
+    const doc = populated || updated;
+    if (property.crmProductId) {
+      return updatePropertyInBigin(property.crmProductId, doc);
+    } else {
+      return pushPropertyToBigin(doc).then(async (result) => {
+        if (result?.productId) {
+          await Property.findByIdAndUpdate(updated._id, { crmProductId: result.productId });
+        }
+      });
+    }
+  }).catch(() => {});
 
   res.json({ success: true, data: updated });
 });

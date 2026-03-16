@@ -196,13 +196,15 @@ exports.pushInquiryToBigin = async (inquiryData) => {
 // ─── Property → Bigin Products sync ──────────────────────────────────────────
 
 const buildProductPayload = (property) => {
-  const agentName = property.agent?.name || property.agent || '';
+  const agentName = property.agent?.name || '';
 
   const commissionDisplay = property.commissionValue
     ? property.commissionType === 'percentage'
       ? `${property.commissionValue}%`
       : `${property.commissionValue} (Fixed)`
     : '';
+
+  const categoryName = property.category?.name || '';
 
   return {
     Product_Name:        property.title,
@@ -215,6 +217,10 @@ const buildProductPayload = (property) => {
     Agent:               agentName,
     VAT_Number:          property.vatNumber || '',
     Agreed_Commission:   commissionDisplay,
+    Location:            property.location || '',
+    Area:                property.area || '',
+    Property_Category:   categoryName,
+    EWA_Type:            property.ewaType || '',
   };
 };
 
