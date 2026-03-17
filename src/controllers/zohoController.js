@@ -174,6 +174,7 @@ exports.pushInquiryToBigin = async (inquiryData) => {
     if (inquiryData.propertyTitle) contactFields.Property      = inquiryData.propertyTitle;
     if (inquiryData.propertyCode)  contactFields.Property_Code  = inquiryData.propertyCode;
     if (inquiryData.propertyType)  contactFields.Property_Type  = inquiryData.propertyType;
+    if (inquiryData.agentEmail)    contactFields.Agent_Email    = inquiryData.agentEmail;
 
     const contactData = { data: [contactFields] };
 
