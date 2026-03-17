@@ -6,8 +6,20 @@ const { MONGO_DUPLICATE_KEY } = require('../constants');
 // @route   GET /api/categories
 // @access  Public
 exports.getCategories = asyncHandler(async (req, res) => {
-  const categories = await Category.find().sort({ createdAt: 1 });
+  const filter = req.query.all === 'true' ? {} : { isActive: true };
+  const categories = await Category.find(filter).sort({ createdAt: 1 });
   res.json({ success: true, count: categories.length, data: categories });
+});
+
+// @desc    Toggle category active status
+// @route   PUT /api/categories/:id/toggle
+// @access  Private (Admin)
+exports.toggleCategoryStatus = asyncHandler(async (req, res) => {
+  const category = await Category.findById(req.params.id);
+  if (!category) return res.status(404).json({ success: false, message: 'Category not found' });
+  category.isActive = !category.isActive;
+  await category.save();
+  res.json({ success: true, data: category });
 });
 
 // @desc    Add a category

@@ -46,8 +46,15 @@ exports.createInquiry = asyncHandler(async (req, res) => {
   // Fire-and-forget background sync
   setImmediate(async () => {
     try {
-      const populated = await Inquiry.findById(inquiry._id).populate({ path: 'property', select: 'title listingId propertyType agent', populate: { path: 'agent', select: 'email' } });
-      await syncToBigin(inquiry, populated?.property?.title, populated?.property?.listingId, populated?.property?.propertyType, populated?.property?.agent?.email);
+      const populated = await Inquiry.findById(inquiry._id)
+        .populate({ path: 'property', select: 'title listingId propertyType agent', populate: { path: 'agent', select: 'email' } });
+      await syncToBigin(
+        inquiry,
+        populated?.property?.title,
+        populated?.property?.listingId,
+        populated?.property?.propertyType,
+        populated?.property?.agent?.email,
+      );
     } catch (err) {
       console.error('Background CRM sync failed:', err.message);
       await Inquiry.findByIdAndUpdate(inquiry._id, { crmSyncStatus: 'failed', crmError: err.message });
@@ -142,7 +149,8 @@ exports.deleteInquiry = asyncHandler(async (req, res) => {
 // @route   POST /api/inquiries/:id/sync
 // @access  Private (Admin/Agent)
 exports.retrySyncInquiry = asyncHandler(async (req, res) => {
-  const inquiry = await Inquiry.findById(req.params.id).populate({ path: 'property', select: 'title listingId propertyType agent', populate: { path: 'agent', select: 'email' } });
+  const inquiry = await Inquiry.findById(req.params.id)
+    .populate({ path: 'property', select: 'title listingId propertyType agent', populate: { path: 'agent', select: 'email' } });
 
   if (!inquiry) {
     return res.status(404).json({ success: false, message: 'Inquiry not found' });
@@ -152,7 +160,13 @@ exports.retrySyncInquiry = asyncHandler(async (req, res) => {
   inquiry.crmError = null;
   await inquiry.save();
 
-  await syncToBigin(inquiry, inquiry.property?.title, inquiry.property?.listingId, inquiry.property?.propertyType, inquiry.property?.agent?.email);
+  await syncToBigin(
+    inquiry,
+    inquiry.property?.title,
+    inquiry.property?.listingId,
+    inquiry.property?.propertyType,
+    inquiry.property?.agent?.email,
+  );
 
   const updated = await Inquiry.findById(inquiry._id).populate('property', 'title');
   res.json({ success: true, data: updated });

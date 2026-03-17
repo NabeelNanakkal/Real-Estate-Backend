@@ -27,6 +27,10 @@ const CategorySchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please add a gradient (e.g. from-blue-500 to-cyan-500)']
   },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
   createdAt: {
     type: Date,
     default: Date.now
