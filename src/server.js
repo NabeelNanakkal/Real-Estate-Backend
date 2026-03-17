@@ -51,7 +51,8 @@ app.use('/api/seller-leads', require('./routes/sellerLeadRoutes'));
 // Content
 app.use('/api/about',         require('./routes/aboutRoutes'));
 app.use('/api/partners',      require('./routes/partnerRoutes'));
-app.use('/api/categories',    require('./routes/categoryRoutes'));
+app.use('/api/categories',     require('./routes/categoryRoutes'));
+app.use('/api/property-types', require('./routes/propertyTypeRoutes'));
 app.use('/api/contact',       require('./routes/contactRoutes'));
 app.use('/api/testimonials',  require('./routes/testimonialRoutes'));
 app.use('/api/banners',       require('./routes/bannerRoutes'));
