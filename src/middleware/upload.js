@@ -1,49 +1,31 @@
-const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+const uploadDir = path.join(__dirname, '../../../uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
 });
 
-// Check if Cloudinary is configured, otherwise fallback to local storage
-const isCloudinaryConfigured = process.env.CLOUDINARY_CLOUD_NAME !== 'your_cloud_name';
-
-let storage;
-
-if (isCloudinaryConfigured) {
-  storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-      folder: 'gqrealestate',
-      allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'svg', 'gif']
-      // Removed transformation since Cloudinary throws errors applying crops to SVGs
-    }
-  });
-  console.log('✅ Using Cloudinary for image storage');
-} else {
-  // Local storage fallback
-  const uploadDir = 'uploads';
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
+// Override file.path to always be a relative URL so controllers work the same
+// on all OS (Windows absolute paths would break image serving)
+const normalizeFilePath = (req, res, next) => {
+  const normalize = (file) => { file.path = `/uploads/${file.filename}`; };
+  if (req.file) normalize(req.file);
+  if (req.files) {
+    if (Array.isArray(req.files)) req.files.forEach(normalize);
+    else Object.values(req.files).flat().forEach(normalize);
   }
-  
-  storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-  });
-  console.log('⚠️ Cloudinary not configured. Using local storage.');
-}
+  next();
+};
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image/')) {
@@ -54,11 +36,10 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
-  }
+  storage,
+  fileFilter,
+  limits: { fileSize: 3 * 1024 * 1024 }
 });
 
+upload.normalize = normalizeFilePath;
 module.exports = upload;

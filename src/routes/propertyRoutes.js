@@ -17,11 +17,11 @@ router.get('/dashboard-stats', protect, getDashboardStats);
 
 router.route('/')
   .get(getProperties)
-  .post(protect, authorize('admin', 'agent'), upload.array('images', 10), createProperty);
+  .post(protect, authorize('admin', 'agent'), upload.array('images', 10), upload.normalize, createProperty);
 
 router.route('/:id')
   .get(getProperty)
-  .put(protect, authorize('admin', 'agent'), upload.array('images', 10), updateProperty)
+  .put(protect, authorize('admin', 'agent'), upload.array('images', 10), upload.normalize, updateProperty)
   .delete(protect, authorize('admin', 'agent'), deleteProperty);
 
 module.exports = router;

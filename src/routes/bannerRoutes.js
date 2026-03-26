@@ -9,8 +9,8 @@ router.get('/active', getActiveBanners);
 
 // Protected admin routes
 router.get('/', protect, authorize('admin'), getBanners);
-router.post('/', protect, authorize('admin'), upload.single('image'), createBanner);
-router.put('/:id', protect, authorize('admin'), upload.single('image'), updateBanner);
+router.post('/', protect, authorize('admin'), upload.single('image'), upload.normalize, createBanner);
+router.put('/:id', protect, authorize('admin'), upload.single('image'), upload.normalize, updateBanner);
 router.delete('/:id', protect, authorize('admin'), deleteBanner);
 
 module.exports = router;

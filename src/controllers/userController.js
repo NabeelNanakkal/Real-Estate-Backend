@@ -17,20 +17,35 @@ exports.getUsers = asyncHandler(async (req, res) => {
     ];
   }
 
-  const sortMap = {
+  // Sort order: primary admin=0, other admins=1, agents/others=2
+  const roleSort = {
+    $cond: [
+      { $eq: ['$isPrimary', true] }, 0,
+      { $cond: [{ $eq: ['$role', 'admin'] }, 1, 2] }
+    ]
+  };
+
+  const secondarySortMap = {
     newest:    { createdAt: -1 },
     oldest:    { createdAt:  1 },
     name_asc:  { name:       1 },
     name_desc: { name:      -1 },
   };
+  const secondarySort = secondarySortMap[sort] || secondarySortMap.newest;
 
   const skip  = (parseInt(page) - 1) * parseInt(limit);
   const total = await User.countDocuments(query);
-  const users = await User.find(query)
-    .select('-password -activeToken')
-    .sort(sortMap[sort] || sortMap.newest)
-    .skip(skip)
-    .limit(parseInt(limit));
+
+  const pipeline = [
+    { $match: query },
+    { $addFields: { _roleOrder: roleSort } },
+    { $sort: { _roleOrder: 1, ...secondarySort } },
+    { $skip: skip },
+    { $limit: parseInt(limit) },
+    { $project: { password: 0, activeToken: 0, _roleOrder: 0 } },
+  ];
+
+  const users = await User.aggregate(pipeline);
 
   res.json({
     success: true,
@@ -49,17 +64,24 @@ exports.createUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'Name, email and password are required.' });
   }
 
+  const assignedRole = role || 'agent';
+
+  // Only primary admin can create other admin accounts
+  if (assignedRole === 'admin' && !req.user.isPrimary) {
+    return res.status(403).json({ success: false, message: 'Only the primary admin can create admin accounts.' });
+  }
+
   const exists = await User.findOne({ email });
   if (exists) {
     return res.status(400).json({ success: false, message: 'A user with this email already exists.' });
   }
 
   const avatar = req.file ? (req.file.path || `/uploads/${req.file.filename}`) : undefined;
-  const user = await User.create({ name, email, password, role: role || 'agent', phone, whatsapp, ...(avatar && { avatar }) });
+  const user = await User.create({ name, email, password, role: assignedRole, phone, whatsapp, ...(avatar && { avatar }) });
 
   res.status(201).json({
     success: true,
-    data: { _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, whatsapp: user.whatsapp, avatar: user.avatar, createdAt: user.createdAt }
+    data: { _id: user._id, name: user.name, email: user.email, role: user.role, isPrimary: user.isPrimary, phone: user.phone, whatsapp: user.whatsapp, avatar: user.avatar, createdAt: user.createdAt }
   });
 });
 
@@ -74,6 +96,11 @@ exports.updateUser = asyncHandler(async (req, res) => {
     return res.status(404).json({ success: false, message: 'User not found.' });
   }
 
+  // Only primary admin can edit admin accounts or promote someone to admin
+  if ((user.role === 'admin' || role === 'admin') && !req.user.isPrimary) {
+    return res.status(403).json({ success: false, message: 'Only the primary admin can edit admin accounts.' });
+  }
+
   if (name)  user.name  = name;
   if (email) user.email = email;
   if (role)  user.role  = role;
@@ -86,7 +113,7 @@ exports.updateUser = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    data: { _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, whatsapp: user.whatsapp, avatar: user.avatar, createdAt: user.createdAt }
+    data: { _id: user._id, name: user.name, email: user.email, role: user.role, isPrimary: user.isPrimary, phone: user.phone, whatsapp: user.whatsapp, avatar: user.avatar, createdAt: user.createdAt }
   });
 });
 
@@ -99,15 +126,21 @@ exports.deleteUser = asyncHandler(async (req, res) => {
   }
 
   const targetUser = await User.findById(req.params.id);
-  if (targetUser?.role === 'admin') {
-    return res.status(403).json({ success: false, message: 'Admin accounts cannot be deleted.' });
-  }
-
-  const user = await User.findByIdAndDelete(req.params.id);
-  if (!user) {
+  if (!targetUser) {
     return res.status(404).json({ success: false, message: 'User not found.' });
   }
 
+  // Only primary admin can delete admin accounts
+  if (targetUser.role === 'admin' && !req.user.isPrimary) {
+    return res.status(403).json({ success: false, message: 'Only the primary admin can delete admin accounts.' });
+  }
+
+  // Nobody can delete the primary admin
+  if (targetUser.isPrimary) {
+    return res.status(403).json({ success: false, message: 'The primary admin account cannot be deleted.' });
+  }
+
+  await User.findByIdAndDelete(req.params.id);
   res.json({ success: true, message: 'User deleted successfully.' });
 });
 

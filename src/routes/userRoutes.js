@@ -6,8 +6,8 @@ const upload = require('../middleware/upload');
 
 router.use(protect, authorize('admin'));
 
-router.route('/').get(getUsers).post(upload.single('avatar'), createUser);
-router.route('/:id').put(upload.single('avatar'), updateUser).delete(deleteUser);
+router.route('/').get(getUsers).post(upload.single('avatar'), upload.normalize, createUser);
+router.route('/:id').put(upload.single('avatar'), upload.normalize, updateUser).delete(deleteUser);
 router.post('/:id/force-logout', forceLogout);
 
 module.exports = router;

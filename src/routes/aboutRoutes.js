@@ -6,6 +6,6 @@ const upload = require('../middleware/upload');
 
 router.route('/')
   .get(getAboutContent)
-  .post(protect, authorize('admin', 'agent'), upload.any(), updateAboutContent);
+  .post(protect, authorize('admin', 'agent'), upload.any(), upload.normalize, updateAboutContent);
 
 module.exports = router;

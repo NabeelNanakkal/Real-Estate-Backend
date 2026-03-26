@@ -7,7 +7,7 @@ const upload = require('../middleware/upload');
 
 router.route('/')
   .get(getPartners)
-  .post(protect, authorize('admin', 'agent'), upload.any(), addPartner);
+  .post(protect, authorize('admin', 'agent'), upload.any(), upload.normalize, addPartner);
 
 router.route('/:id')
   .delete(protect, authorize('admin', 'agent'), deletePartner);

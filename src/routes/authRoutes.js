@@ -9,7 +9,7 @@ router.post('/login', login);
 router.post('/logout', protect, logout);
 router.get('/me', protect, getMe);
 router.put('/preferences', protect, updatePreferences);
-router.put('/profile', protect, upload.any(), updateProfile);
+router.put('/profile', protect, upload.any(), upload.normalize, updateProfile);
 router.put('/password', protect, updatePassword);
 router.get('/public-profile', getPublicProfile);
 

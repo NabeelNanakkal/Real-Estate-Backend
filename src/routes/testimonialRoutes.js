@@ -12,10 +12,10 @@ const upload = require('../middleware/upload');
 
 router.route('/')
   .get(getTestimonials)
-  .post(protect, authorize('admin', 'agent'), upload.single('image'), addTestimonial);
+  .post(protect, authorize('admin', 'agent'), upload.single('image'), upload.normalize, addTestimonial);
 
 router.route('/:id')
-  .put(protect, authorize('admin', 'agent'), upload.single('image'), updateTestimonial)
+  .put(protect, authorize('admin', 'agent'), upload.single('image'), upload.normalize, updateTestimonial)
   .delete(protect, authorize('admin', 'agent'), deleteTestimonial);
 
 module.exports = router;
