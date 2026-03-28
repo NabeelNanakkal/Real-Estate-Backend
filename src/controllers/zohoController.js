@@ -233,13 +233,11 @@ exports.pushPropertyToBigin = async (property) => {
     const tokens    = await ensureValidToken();
     const apiDomain = tokens.api_domain || 'https://www.zohoapis.com';
     const payload   = buildProductPayload(property);
-    console.log('[Bigin] Push payload:', JSON.stringify(payload, null, 2));
     const response  = await axios.post(
       `${apiDomain}/bigin/v1/Products`,
       { data: [payload] },
       { headers: biginHeaders(tokens.access_token) }
     );
-    console.log('[Bigin] Push response:', JSON.stringify(response.data, null, 2));
     const record = response.data?.data?.[0];
     if (record?.status === 'error') {
       console.error('Bigin Products create error:', record);
@@ -258,13 +256,11 @@ exports.updatePropertyInBigin = async (crmProductId, property) => {
     const tokens    = await ensureValidToken();
     const apiDomain = tokens.api_domain || 'https://www.zohoapis.com';
     const payload   = { id: crmProductId, ...buildProductPayload(property) };
-    console.log('[Bigin] Update payload:', JSON.stringify(payload, null, 2));
     const response  = await axios.put(
       `${apiDomain}/bigin/v1/Products/${crmProductId}`,
       { data: [payload] },
       { headers: biginHeaders(tokens.access_token) }
     );
-    console.log('[Bigin] Update response:', JSON.stringify(response.data, null, 2));
     const record = response.data?.data?.[0];
     if (record?.status === 'error') {
       console.error('Bigin Products update error:', record);
